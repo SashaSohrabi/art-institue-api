@@ -68,8 +68,8 @@ export default function ArtworkCard({
 
   return (
     <div
-      className={`card bg-base-100 shadow border transition-colors duration-200 cursor-pointer ${
-        selected ? "border-primary" : "border-transparent hover:border-base-300"
+      className={`card bg-base-100 h-[26.25rem] shadow border transition-colors duration-200 cursor-pointer ${
+        selected ? "border-primary" : "border-black hover:border-base-300"
       }`}
       role="button"
       tabIndex={0}
@@ -91,7 +91,7 @@ export default function ArtworkCard({
         <div className="aspect-[4/3] bg-base-200 grid place-items-center text-xs">No image</div>
       )}
       <div className="card-body p-4">
-        <h3 className="card-title text-base">{art.title}</h3>
+        <h3 className="card-title text-bas line-clamp-2">{art.title}</h3>
         <p className="text-sm opacity-70">{art.artist_title ?? "Unknown artist"}</p>
 
         {!isSaved ? (
