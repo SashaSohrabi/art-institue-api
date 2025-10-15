@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+@plugin "daisyui";
+
+:root {
+  color-scheme: light dark;
+}
+body {
+  @apply bg-base-100 text-base-content;
+}
