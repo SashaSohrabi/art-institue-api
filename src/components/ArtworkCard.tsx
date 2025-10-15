@@ -1,5 +1,6 @@
 import type { SavedArtwork } from "@/types";
 import { useEffect, useRef, useState } from "react";
+import type { KeyboardEvent, MouseEvent } from "react";
 
 type Props = {
   art: SavedArtwork;
@@ -8,6 +9,15 @@ type Props = {
   onAdd?: (art: SavedArtwork) => void;
   onRemove?: (id: number) => void;
   onSaveNote?: (id: number, text: string) => void;
+  onSelect?: (art: SavedArtwork) => void;
+  selected?: boolean;
+  onImageHover?: (event: {
+    art: SavedArtwork;
+    hovering: boolean;
+    rect: DOMRect;
+    xRatio: number;
+    yRatio: number;
+  }) => void;
 };
 
 export default function ArtworkCard({
@@ -17,19 +27,65 @@ export default function ArtworkCard({
   onAdd,
   onRemove,
   onSaveNote,
+  onSelect,
+  selected = false,
+  onImageHover,
 }: Props) {
   const [note, setNote] = useState<string>(art.note ?? "");
   const noteDetailsRef = useRef<HTMLDetailsElement | null>(null);
+  const imageWrapperRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setNote(art.note ?? "");
   }, [art.note]);
 
+  const handleSelect = () => {
+    onSelect?.(art);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleSelect();
+    }
+  };
+
+  const emitHover = (hovering: boolean, event?: MouseEvent<HTMLElement>) => {
+    if (!onImageHover || !imageWrapperRef.current || !art.imageUrl) return;
+    const rect = imageWrapperRef.current.getBoundingClientRect();
+
+    let xRatio = 0.5;
+    let yRatio = 0.5;
+    if (hovering && event) {
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      xRatio = rect.width > 0 ? Math.min(Math.max(x / rect.width, 0), 1) : 0.5;
+      yRatio = rect.height > 0 ? Math.min(Math.max(y / rect.height, 0), 1) : 0.5;
+    }
+
+    onImageHover({ art, hovering, rect, xRatio, yRatio });
+  };
+
   return (
-    <div className="card bg-base-100 shadow">
+    <div
+      className={`card bg-base-100 shadow border transition-colors duration-200 cursor-pointer ${
+        selected ? "border-primary" : "border-transparent hover:border-base-300"
+      }`}
+      role="button"
+      tabIndex={0}
+      onClick={handleSelect}
+      onKeyDown={handleKeyDown}
+    >
       {art.imageUrl ? (
-        <figure className="aspect-[4/3] overflow-hidden">
-          <img src={art.imageUrl} alt={art.title} loading="lazy" className="w-full object-cover" />
+        <figure
+          ref={imageWrapperRef}
+          className="aspect-[4/3] overflow-hidden cursor-zoom-in"
+          onMouseEnter={(event) => emitHover(true, event)}
+          onMouseMove={(event) => emitHover(true, event)}
+          onMouseLeave={() => emitHover(false)}
+      aria-pressed={selected}
+    >
+          <img src={art.imageUrl} alt={art.title} loading="lazy" className="w-full h-full object-cover" />
         </figure>
       ) : (
         <div className="aspect-[4/3] bg-base-200 grid place-items-center text-xs">No image</div>
@@ -40,7 +96,13 @@ export default function ArtworkCard({
 
         {!isSaved ? (
           <div className="card-actions justify-end">
-            <button className="btn btn-sm btn-outline" onClick={() => onAdd?.(art)}>
+            <button
+              className="btn btn-sm btn-outline"
+              onClick={(event) => {
+                event.stopPropagation();
+                onAdd?.(art);
+              }}
+            >
               Add to Gallery
             </button>
           </div>
@@ -49,13 +111,20 @@ export default function ArtworkCard({
             <div className="card-actions justify-end">
               <button
                 className="btn btn-sm btn-outline btn-error"
-                onClick={() => onRemove?.(art.id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onRemove?.(art.id);
+                }}
               >
                 Remove from Gallery
               </button>
             </div>
             <details ref={noteDetailsRef} className="mt-3 note-dropdown">
-              <summary className="btn btn-sm btn-outline w-full justify-between">
+              <summary
+                className="btn btn-sm btn-outline w-full justify-between"
+                onClick={(event) => event.stopPropagation()}
+                onKeyDown={(event) => event.stopPropagation()}
+              >
                 <span>{note ? "Edit note" : "Add note"}</span>
                 <span className="opacity-70">{/* chevron handled via CSS */}</span>
               </summary>
@@ -70,7 +139,8 @@ export default function ArtworkCard({
                 <div className="card-actions justify-end">
                   <button
                     className="btn btn-sm"
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.stopPropagation();
                       onSaveNote?.(art.id, note);
                       if (noteDetailsRef.current) noteDetailsRef.current.open = false;
                     }}
@@ -85,7 +155,10 @@ export default function ArtworkCard({
           <div className="card-actions justify-end">
             <button
               className="btn btn-sm btn-outline btn-error"
-              onClick={() => onRemove?.(art.id)}
+              onClick={(event) => {
+                event.stopPropagation();
+                onRemove?.(art.id);
+              }}
             >
               Remove from Gallery
             </button>

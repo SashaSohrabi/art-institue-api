@@ -9,6 +9,7 @@ export function useArtworkSearch(initialQuery = "painting") {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [totalPages, setTotalPages] = useState<number | null>(null);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
 
@@ -19,6 +20,7 @@ export function useArtworkSearch(initialQuery = "painting") {
     setHasMore(true);
     setTotalPages(null);
     setLoading(true);
+    setHasLoaded(false);
   }, [q]);
 
   useEffect(() => {
@@ -38,6 +40,7 @@ export function useArtworkSearch(initialQuery = "painting") {
         setItems((prev) => (page === 1 ? chunk : [...prev, ...chunk]));
         setTotalPages(pagesTotal);
         setHasMore(pagesTotal != null ? page < pagesTotal : nextHasMore);
+        setHasLoaded(true);
       } catch (error: any) {
         if (error?.name !== "AbortError") console.error(error);
       } finally {
@@ -62,6 +65,7 @@ export function useArtworkSearch(initialQuery = "painting") {
     loading,
     hasMore,
     totalPages,
+    hasLoaded,
     loadMore,
   };
 }
