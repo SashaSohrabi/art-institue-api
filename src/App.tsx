@@ -1,9 +1,16 @@
-function App() {
+import { Route, Routes } from 'react-router';
+import HomePage from '@/pages/Home';
+import Gallery from '@/pages/Gallery';
+import Header from '@/components/Header';
+
+export default function App() {
   return (
     <>
-      <h1>Hello</h1>
+      <Header />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/gallery" element={<Gallery />} />
+      </Routes>
     </>
   );
 }
-
-export default App;

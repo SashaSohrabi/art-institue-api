@@ -7,3 +7,58 @@
 body {
   @apply bg-base-100 text-base-content;
 }
+
+.header-static {
+  transform: translateY(0);
+}
+
+.header-pinned {
+  transform: translateY(0);
+  animation: header-slide-in 220ms ease-out;
+}
+
+@keyframes header-slide-in {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.note-dropdown summary {
+  list-style: none;
+}
+
+.note-dropdown summary::marker {
+  content: "";
+}
+
+.note-dropdown summary::after {
+  content: "▾";
+  font-size: 0.75rem;
+  transition: transform 150ms ease;
+}
+
+.note-dropdown[open] summary::after {
+  transform: rotate(-180deg);
+}
+
+@supports (selector(details::details-content)) {
+  .note-dropdown {
+    interpolate-size: allow-keywords;
+  }
+
+  .note-dropdown::details-content {
+    height: 0;
+    overflow: hidden;
+    transition:
+      height 0.2s ease,
+      content-visibility 0.2s ease;
+    transition-behavior: allow-discrete;
+  }
+
+  .note-dropdown[open]::details-content {
+    height: auto;
+  }
+}
