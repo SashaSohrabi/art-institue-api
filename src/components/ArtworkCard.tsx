@@ -1,6 +1,6 @@
-import type { SavedArtwork } from "@/types";
-import { useEffect, useRef, useState } from "react";
-import type { KeyboardEvent, MouseEvent } from "react";
+import type { SavedArtwork } from '@/types';
+import { useEffect, useRef, useState } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 
 type Props = {
   art: SavedArtwork;
@@ -31,12 +31,12 @@ export default function ArtworkCard({
   selected = false,
   onImageHover,
 }: Props) {
-  const [note, setNote] = useState<string>(art.note ?? "");
+  const [note, setNote] = useState<string>(art.note ?? '');
   const noteDetailsRef = useRef<HTMLDetailsElement | null>(null);
   const imageWrapperRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    setNote(art.note ?? "");
+    setNote(art.note ?? '');
   }, [art.note]);
 
   const handleSelect = () => {
@@ -44,7 +44,7 @@ export default function ArtworkCard({
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter" || event.key === " ") {
+    if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       handleSelect();
     }
@@ -60,7 +60,8 @@ export default function ArtworkCard({
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
       xRatio = rect.width > 0 ? Math.min(Math.max(x / rect.width, 0), 1) : 0.5;
-      yRatio = rect.height > 0 ? Math.min(Math.max(y / rect.height, 0), 1) : 0.5;
+      yRatio =
+        rect.height > 0 ? Math.min(Math.max(y / rect.height, 0), 1) : 0.5;
     }
 
     onImageHover({ art, hovering, rect, xRatio, yRatio });
@@ -68,8 +69,8 @@ export default function ArtworkCard({
 
   return (
     <div
-      className={`card bg-base-100 h-[26.25rem] shadow border transition-colors duration-200 cursor-pointer ${
-        selected ? "border-primary" : "border-black hover:border-base-300"
+      className={`card bg-base-100 h-[26.25rem] shadow border transition-colors cursor-pointer ${
+        selected ? 'border-primary' : 'border-black hover:border-base-300'
       }`}
       role="button"
       tabIndex={0}
@@ -79,20 +80,29 @@ export default function ArtworkCard({
       {art.imageUrl ? (
         <figure
           ref={imageWrapperRef}
-          className="aspect-[4/3] overflow-hidden cursor-zoom-in"
+          className="group aspect-[4/3] overflow-hidden cursor-zoom-in"
           onMouseEnter={(event) => emitHover(true, event)}
           onMouseMove={(event) => emitHover(true, event)}
           onMouseLeave={() => emitHover(false)}
-      aria-pressed={selected}
-    >
-          <img src={art.imageUrl} alt={art.title} loading="lazy" className="w-full h-full object-cover" />
+          aria-pressed={selected}
+        >
+          <img
+            src={art.imageUrl}
+            alt={art.title}
+            loading="lazy"
+            className="w-full h-full scale-[1.05] object-cover transform transition duration-300 group-hover:scale-[1]"
+          />
         </figure>
       ) : (
-        <div className="aspect-[4/3] bg-base-200 grid place-items-center text-xs">No image</div>
+        <div className="aspect-[4/3] bg-base-200 grid place-items-center text-xs">
+          No image
+        </div>
       )}
       <div className="card-body p-4">
         <h3 className="card-title text-bas line-clamp-2">{art.title}</h3>
-        <p className="text-sm opacity-70">{art.artist_title ?? "Unknown artist"}</p>
+        <p className="text-sm opacity-70">
+          {art.artist_title ?? 'Unknown artist'}
+        </p>
 
         {!isSaved ? (
           <div className="card-actions justify-end">
@@ -125,8 +135,10 @@ export default function ArtworkCard({
                 onClick={(event) => event.stopPropagation()}
                 onKeyDown={(event) => event.stopPropagation()}
               >
-                <span>{note ? "Edit note" : "Add note"}</span>
-                <span className="opacity-70">{/* chevron handled via CSS */}</span>
+                <span>{note ? 'Edit note' : 'Add note'}</span>
+                <span className="opacity-70">
+                  {/* chevron handled via CSS */}
+                </span>
               </summary>
               <div className="mt-4 space-y-3">
                 <textarea
@@ -142,7 +154,8 @@ export default function ArtworkCard({
                     onClick={(event) => {
                       event.stopPropagation();
                       onSaveNote?.(art.id, note);
-                      if (noteDetailsRef.current) noteDetailsRef.current.open = false;
+                      if (noteDetailsRef.current)
+                        noteDetailsRef.current.open = false;
                     }}
                   >
                     Save note
