@@ -1,6 +1,6 @@
 import type { SavedArtwork } from '@/types';
 import { useEffect, useRef, useState } from 'react';
-import type { KeyboardEvent, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 
 type Props = {
   art: SavedArtwork;
@@ -43,13 +43,6 @@ export default function ArtworkCard({
     onSelect?.(art);
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      handleSelect();
-    }
-  };
-
   const emitHover = (hovering: boolean, event?: MouseEvent<HTMLElement>) => {
     if (!onImageHover || !imageWrapperRef.current || !art.imageUrl) return;
     const rect = imageWrapperRef.current.getBoundingClientRect();
@@ -72,10 +65,7 @@ export default function ArtworkCard({
       className={`card bg-base-100 h-[26.25rem] shadow border transition-colors cursor-pointer ${
         selected ? 'border-primary' : 'border-black hover:border-base-300'
       }`}
-      role="button"
-      tabIndex={0}
       onClick={handleSelect}
-      onKeyDown={handleKeyDown}
     >
       {art.imageUrl ? (
         <figure
@@ -136,9 +126,6 @@ export default function ArtworkCard({
                 onKeyDown={(event) => event.stopPropagation()}
               >
                 <span>{note ? 'Edit note' : 'Add note'}</span>
-                <span className="opacity-70">
-                  {/* chevron handled via CSS */}
-                </span>
               </summary>
               <div className="mt-4 space-y-3">
                 <textarea
